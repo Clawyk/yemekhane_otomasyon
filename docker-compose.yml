@@ -1,0 +1,167 @@
+services:
+  mysql-primary:
+    image: mysql:8.0
+    container_name: mysql-primary
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass_2026
+      MYSQL_DATABASE: yemekhane
+      TZ: Europe/Istanbul
+    command:
+      - --server-id=1
+      - --log-bin=mysql-bin
+      - --binlog-format=ROW
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_turkish_ci
+      - --default-authentication-plugin=mysql_native_password
+      - --log-bin-trust-function-creators=1
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_primary_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - yemekhane-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot_pass_2026", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  mysql-replica:
+    image: mysql:8.0
+    container_name: mysql-replica
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_pass_2026
+      TZ: Europe/Istanbul
+    command:
+      - --server-id=2
+      - --log-bin=mysql-bin
+      - --relay-log=mysql-relay-bin
+      - --binlog-format=ROW
+      - --gtid-mode=ON
+      - --enforce-gtid-consistency=ON
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_turkish_ci
+      - --default-authentication-plugin=mysql_native_password
+      - --log-bin-trust-function-creators=1
+      - --read-only=1
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_replica_data:/var/lib/mysql
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+    networks:
+      - yemekhane-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot_pass_2026", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+
+  replica-setup:
+    image: mysql:8.0
+    container_name: replica-setup
+    restart: "no"
+    environment:
+      PRIMARY_HOST: mysql-primary
+      REPLICA_HOST: mysql-replica
+      MYSQL_ROOT_PASSWORD: root_pass_2026
+      REPL_USER: repl_user
+      REPL_PASS: repl_pass_2026
+    volumes:
+      - ./db/replica-setup.sh:/replica-setup.sh:ro
+    entrypoint: ["/bin/bash", "/replica-setup.sh"]
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+      mysql-replica:
+        condition: service_healthy
+    networks:
+      - yemekhane-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - yemekhane-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  frontend:
+    image: httpd:2.4-alpine
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/local/apache2/htdocs:ro
+      - ./apache/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf:ro
+    command: ["httpd-foreground", "-c", "Include conf/extra/httpd-vhosts.conf"]
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+      mysql-replica:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - yemekhane-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:80/ >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # uygulama:
+  #   build:
+  #     context: ./uygulama
+  #     dockerfile: Dockerfile
+  #   container_name: uygulama
+  #   restart: unless-stopped
+  #   environment:
+  #     ASPNETCORE_URLS: http://+:8080
+  #     PRIMARY_CONNECTION_STRING: "Server=mysql-primary;Port=3306;Database=yemekhane;User=root;Password=root_pass_2026;CharSet=utf8mb4;AllowUserVariables=True;"
+  #     REPLICA_CONNECTION_STRING: "Server=mysql-replica;Port=3306;Database=yemekhane;User=root;Password=root_pass_2026;CharSet=utf8mb4;AllowUserVariables=True;"
+  #     REDIS_CONNECTION_STRING: "redis:6379"
+  #     TZ: Europe/Istanbul
+  #   depends_on:
+  #     mysql-primary:
+  #       condition: service_healthy
+  #     mysql-replica:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #   networks:
+  #     - yemekhane-net
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/api/health >/dev/null 2>&1 || exit 1"]
+  #     interval: 5s
+  #     timeout: 3s
+  #     retries: 10
+
+networks:
+  yemekhane-net:
+    driver: bridge
+
+volumes:
+  mysql_primary_data:
+  mysql_replica_data:
+  redis_data:
+
