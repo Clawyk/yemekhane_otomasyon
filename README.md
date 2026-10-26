@@ -89,10 +89,3 @@ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -e "SHOW CREAT
 docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -e "SHOW CREATE TABLE kullanici_alerjenleri\G"
 ```
 
----
-
-## 4. Sık Sorunlar ve Çözümleri
-
-- **Port Çakışması (`8080`, `3307`, `3308`, `6379`):** Başka bir proje bu portları kullanıyorsa `docker ps` ile kontrol edip ilgili container'ı durdurun.
-- **Veritabanını Sıfırlama:** Şemayı ve örnek verileri sıfırdan kurmak isterseniz `docker compose down -v && docker compose up -d --build` komutunu çalıştırın.
-
