@@ -121,6 +121,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      uygulama:
+        condition: service_healthy
     networks:
       - yemekhane-net
     healthcheck:
@@ -129,32 +131,32 @@ services:
       timeout: 3s
       retries: 10
 
-  # uygulama:
-  #   build:
-  #     context: ./uygulama
-  #     dockerfile: Dockerfile
-  #   container_name: uygulama
-  #   restart: unless-stopped
-  #   environment:
-  #     ASPNETCORE_URLS: http://+:8080
-  #     PRIMARY_CONNECTION_STRING: "Server=mysql-primary;Port=3306;Database=yemekhane;User=root;Password=root_pass_2026;CharSet=utf8mb4;AllowUserVariables=True;"
-  #     REPLICA_CONNECTION_STRING: "Server=mysql-replica;Port=3306;Database=yemekhane;User=root;Password=root_pass_2026;CharSet=utf8mb4;AllowUserVariables=True;"
-  #     REDIS_CONNECTION_STRING: "redis:6379"
-  #     TZ: Europe/Istanbul
-  #   depends_on:
-  #     mysql-primary:
-  #       condition: service_healthy
-  #     mysql-replica:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - yemekhane-net
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/api/health >/dev/null 2>&1 || exit 1"]
-  #     interval: 5s
-  #     timeout: 3s
-  #     retries: 10
+  uygulama:
+    build:
+      context: ./uygulama
+      dockerfile: Dockerfile
+    container_name: uygulama
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      PRIMARY_CONNECTION_STRING: "Server=mysql-primary;Port=3306;Database=yemekhane;User=root;Password=root_pass_2026;CharSet=utf8mb4;AllowUserVariables=True;"
+      REPLICA_CONNECTION_STRING: "Server=mysql-replica;Port=3306;Database=yemekhane;User=root;Password=root_pass_2026;CharSet=utf8mb4;AllowUserVariables=True;"
+      REDIS_CONNECTION_STRING: "redis:6379"
+      TZ: Europe/Istanbul
+    depends_on:
+      mysql-primary:
+        condition: service_healthy
+      mysql-replica:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - yemekhane-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/api/health >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
 
 networks:
   yemekhane-net:
