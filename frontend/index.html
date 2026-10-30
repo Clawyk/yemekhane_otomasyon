@@ -7,18 +7,332 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
+    <!-- Üst Bilgi Çubuğu (Header) -->
     <header class="site-header">
-        <div class="container">
-            <h1>Kampüs Yemekhane Otomasyonu</h1>
-            <p>Aşama 1 · Altyapı ve Veritabanı Replikasyon Sistemi Hazır</p>
+        <div class="container header-inner">
+            <div class="brand">
+                <span class="brand-icon">🍽️</span>
+                <div>
+                    <h1>Kampüs Yemekhane Otomasyonu</h1>
+                    <p class="subtitle">Menü · Rezervasyon · Bakiye · Değerlendirme Sistemi</p>
+                </div>
+            </div>
+
+            <!-- Giriş yapılmışsa kullanıcı özeti -->
+            <div id="userHeaderBox" class="user-header-box hidden">
+                <div class="user-meta">
+                    <span id="headerUserName" class="user-name"></span>
+                    <span id="headerUserRole" class="badge badge-role"></span>
+                </div>
+                <div class="user-balance-pill" title="Güncel Bakiye">
+                    <span>Cüzdan:</span>
+                    <strong id="headerUserBalance">0.00 ₺</strong>
+                </div>
+                <button id="btnLogout" type="button" class="btn btn-outline-light btn-sm">Çıkış Yap</button>
+            </div>
         </div>
     </header>
-    <main class="container">
-        <section class="card">
-            <h2>Sistem Durumu</h2>
-            <p>Apache 2.4 Frontend, MySQL Primary (3307), MySQL Replica (3308) ve Redis (6379) container servisleri çalışmaktadır.</p>
+
+    <!-- Sekme Menüsü (Navigasyon) -->
+    <nav id="mainNav" class="main-nav hidden" aria-label="Ana Menü">
+        <div class="container nav-scroll">
+            <button type="button" class="nav-tab active" data-screen="screen-gunun-menusu">1. Günün Menüsü</button>
+            <button type="button" class="nav-tab" data-screen="screen-haftalik-menu">2. Haftalık Menü &amp; Rezervasyon</button>
+            <button type="button" class="nav-tab" data-screen="screen-rezervasyonlarim">3. Rezervasyonlarım</button>
+            <button type="button" class="nav-tab" data-screen="screen-bakiye">4. Bakiye &amp; Hareketler</button>
+            <button type="button" class="nav-tab" data-screen="screen-degerlendirme">5. Değerlendirme</button>
+            <button type="button" class="nav-tab" data-screen="screen-profil">6. Profil &amp; Alerjenlerim</button>
+            <button id="navTabYonetici" type="button" class="nav-tab hidden" data-screen="screen-yonetici">7. Yönetici Paneli</button>
+        </div>
+    </nav>
+
+    <main class="container main-content">
+        <!-- Bildirim / Hata Mesajı Kutusu (SQLSTATE 45000 ve İşlem Yanıtları) -->
+        <div id="alertBanner" class="alert-banner hidden" role="alert">
+            <span id="alertText"></span>
+            <button type="button" id="alertClose" class="alert-close" aria-label="Kapat">&times;</button>
+        </div>
+
+        <!-- ================================================================
+             EKRAN 1: GİRİŞ VE ÇIKIŞ (E-posta + Şifre, Bcrypt Doğrulaması)
+             ================================================================ -->
+        <section id="screen-login" class="screen">
+            <div class="login-wrapper">
+                <div class="card login-card">
+                    <div class="card-header">
+                        <h2>Kullanıcı Girişi</h2>
+                        <p>Kampüs e-posta adresiniz ve şifrenizle oturum açın.</p>
+                    </div>
+                    <form id="loginForm" class="form-stack">
+                        <div class="form-group">
+                            <label for="loginEmail">E-Posta Adresi</label>
+                            <input type="email" id="loginEmail" required placeholder="ornek@kampus.edu.tr" value="ahmet.yilmaz@kampus.edu.tr">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Şifre</label>
+                            <input type="password" id="loginPassword" required placeholder="••••••" value="123456">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Giriş Yap</button>
+                    </form>
+
+                    <div class="quick-accounts">
+                        <p class="quick-title">Hızlı Test Hesapları (Şifre: <code>123456</code>):</p>
+                        <div class="quick-buttons">
+                            <button type="button" class="btn btn-secondary btn-xs quick-login" data-email="ahmet.yilmaz@kampus.edu.tr">Öğrenci (Ahmet)</button>
+                            <button type="button" class="btn btn-secondary btn-xs quick-login" data-email="kemal.guler@kampus.edu.tr">Personel (Dr. Kemal)</button>
+                            <button type="button" class="btn btn-secondary btn-xs quick-login" data-email="admin@kampus.edu.tr">Yönetici (Murat)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             EKRAN 2: GÜNÜN MENÜSÜ
+             ================================================================ -->
+        <section id="screen-gunun-menusu" class="screen hidden">
+            <div class="card filter-card">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Günün Menüsü</h2>
+                        <p class="text-muted">Yemekhane, tarih ve öğün seçerek yemekleri, kalorileri ve alerjen uyarılarını inceleyin.</p>
+                    </div>
+                    <span id="dailyCacheBadge" class="badge badge-cache">Kaynak: -</span>
+                </div>
+
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label for="dailyYemekhane">Yemekhane</label>
+                        <select id="dailyYemekhane"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dailyTarih">Tarih</label>
+                        <input type="date" id="dailyTarih">
+                    </div>
+                    <div class="form-group">
+                        <label for="dailyOgun">Öğün</label>
+                        <select id="dailyOgun"></select>
+                    </div>
+                    <div class="form-group filter-action">
+                        <button type="button" id="btnLoadDailyMenu" class="btn btn-primary btn-block">Menüyü Getir</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dailyMenuContainer" class="daily-menu-content"></div>
+        </section>
+
+        <!-- ================================================================
+             EKRAN 3: HAFTALIK MENÜ VE REZERVASYON
+             ================================================================ -->
+        <section id="screen-haftalik-menu" class="screen hidden">
+            <div class="card filter-card">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Haftalık Menü ve Rezervasyon</h2>
+                        <p class="text-muted">Boş kontenjanı, rolünüze özel ücreti ve porsiyon seçeneğini görerek rezervasyon yapın.</p>
+                    </div>
+                </div>
+
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label for="weeklyYemekhane">Yemekhane</label>
+                        <select id="weeklyYemekhane"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="weeklyBaslangic">Başlangıç Tarihi</label>
+                        <input type="date" id="weeklyBaslangic">
+                    </div>
+                    <div class="form-group filter-action">
+                        <button type="button" id="btnLoadWeeklyMenu" class="btn btn-primary btn-block">7 Günlük Menüyü Listele</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="weeklyMenuGrid" class="weekly-grid"></div>
+        </section>
+
+        <!-- ================================================================
+             EKRAN 4: REZERVASYONLARIM
+             ================================================================ -->
+        <section id="screen-rezervasyonlarim" class="screen hidden">
+            <div class="card">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Rezervasyonlarım</h2>
+                        <p class="text-muted">Aktif, kullanılmış ve iptal edilmiş rezervasyonlarınız. Son saati geçmemiş aktif rezervasyonları iptal edebilirsiniz.</p>
+                    </div>
+                    <button type="button" id="btnRefreshReservations" class="btn btn-secondary btn-sm">Yenile</button>
+                </div>
+
+                <div id="reservationsList" class="reservations-list"></div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             EKRAN 5: BAKİYE VE HAREKET GEÇMİŞİ
+             ================================================================ -->
+        <section id="screen-bakiye" class="screen hidden">
+            <div class="two-col-grid">
+                <div class="card">
+                    <h3>Bakiye Özeti ve Yükleme</h3>
+                    <div class="balance-highlight">
+                        <span class="balance-label">Güncel Cüzdan Bakiyesi</span>
+                        <strong id="balanceCurrentAmount" class="balance-value">0.00 ₺</strong>
+                        <small id="balanceSumCheck" class="balance-sub"></small>
+                    </div>
+
+                    <form id="topupForm" class="form-stack">
+                        <div class="form-group">
+                            <label for="topupAmount">Yüklenecek Tutar (₺)</label>
+                            <input type="number" id="topupAmount" step="0.01" min="1" max="10000" value="100" required>
+                        </div>
+                        <div class="quick-amounts">
+                            <button type="button" class="btn btn-secondary btn-xs quick-amount" data-amount="50">+50 ₺</button>
+                            <button type="button" class="btn btn-secondary btn-xs quick-amount" data-amount="100">+100 ₺</button>
+                            <button type="button" class="btn btn-secondary btn-xs quick-amount" data-amount="250">+250 ₺</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="topupNote">Açıklama</label>
+                            <input type="text" id="topupNote" value="Online Kredi Kartı Yüklemesi" maxlength="120">
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">Bakiye Yükle (sp_bakiye_yukle)</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="section-title-row">
+                        <h3>Bakiye Hareket Geçmişi</h3>
+                        <span id="balanceSourceBadge" class="badge badge-cache">mysql-replica</span>
+                    </div>
+                    <div id="balanceHistoryContainer" class="table-responsive"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             EKRAN 6: DEĞERLENDİRME (1-5 Puan ve Yorum)
+             ================================================================ -->
+        <section id="screen-degerlendirme" class="screen hidden">
+            <div class="two-col-grid">
+                <div class="card">
+                    <h3>Kullanılmış Menü Değerlendir</h3>
+                    <p class="text-muted mb-1">Yalnızca turnikeden geçiş yapılarak <strong>kullanıldı</strong> durumuna geçmiş menülere kişi başına 1–5 arası puan ve yorum verebilirsiniz.</p>
+
+                    <form id="ratingForm" class="form-stack">
+                        <div class="form-group">
+                            <label for="ratingMenuSelect">Değerlendirilecek Menü</label>
+                            <select id="ratingMenuSelect" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ratingScore">Puan (1 - 5)</label>
+                            <select id="ratingScore" required>
+                                <option value="5">⭐⭐⭐⭐⭐ (5 - Çok İyi)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 - İyi)</option>
+                                <option value="3">⭐⭐⭐ (3 - Orta)</option>
+                                <option value="2">⭐⭐ (2 - Geliştirilmeli)</option>
+                                <option value="1">⭐ (1 - Kötü)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ratingComment">Yorumunuz</label>
+                            <textarea id="ratingComment" rows="3" maxlength="500" placeholder="Yemeklerin lezzeti, sıcaklığı ve porsiyonu hakkındaki görüşünüz..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Değerlendirmeyi Kaydet</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Geçmiş Değerlendirmelerim</h3>
+                    <div id="myRatingsList" class="ratings-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             AŞAMA 4: PROFİL VE ALERJEN SEÇİMİ EKRANI
+             ================================================================ -->
+        <section id="screen-profil" class="screen hidden">
+            <div class="card">
+                <div class="section-title-row">
+                    <div>
+                        <h2>Profilim ve Alerjen Tercihlerim</h2>
+                        <p class="text-muted">Seçtiğiniz alerjenleri içeren yemekler Günün Menüsü ve Haftalık Menü ekranlarında otomatik olarak kırmızı uyarıyla vurgulanır.</p>
+                    </div>
+                </div>
+
+                <div id="profileInfoBox" class="profile-info-box"></div>
+
+                <form id="allergenForm" class="form-stack">
+                    <h3>Hassasiyetiniz Olan Alerjenleri Seçin (14 Alerjen)</h3>
+                    <div id="allergenCheckboxes" class="checkbox-grid"></div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Alerjen Tercihlerimi Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================================================================
+             EKRAN 7: YÖNETİCİ PANELİ
+             ================================================================ -->
+        <section id="screen-yonetici" class="screen hidden">
+            <div class="two-col-grid">
+                <div class="card">
+                    <div class="section-title-row">
+                        <h3>Menü Oluştur / Düzenle</h3>
+                        <button type="button" id="btnResetAdminForm" class="btn btn-secondary btn-xs">Formu Temizle</button>
+                    </div>
+                    <p class="text-muted mb-1">Menü kaydedildiğinde veya güncellendiğinde ilgili <code>menu:{yemekhane_id}:{tarih}:{ogun_id}</code> Redis önbellek kaydı otomatik olarak silinir.</p>
+
+                    <form id="adminMenuForm" class="form-stack">
+                        <input type="hidden" id="adminMenuId" value="">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label for="adminYemekhane">Yemekhane</label>
+                                <select id="adminYemekhane" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminOgun">Öğün</label>
+                                <select id="adminOgun" required></select>
+                            </div>
+                        </div>
+                        <div class="form-row-3">
+                            <div class="form-group">
+                                <label for="adminTarih">Tarih</label>
+                                <input type="date" id="adminTarih" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminOgrenciFiyat">Öğrenci (₺)</label>
+                                <input type="number" id="adminOgrenciFiyat" step="0.01" min="0" value="30.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="adminPersonelFiyat">Personel (₺)</label>
+                                <input type="number" id="adminPersonelFiyat" step="0.01" min="0" value="75.00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Menüdeki Yemekler (Kategori Sırasıyla Seçin)</label>
+                            <div id="adminDishesContainer" class="dishes-selector"></div>
+                        </div>
+
+                        <button type="submit" id="btnSaveAdminMenu" class="btn btn-primary btn-block">Menüyü Kaydet ve Önbelleği Yenile</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="section-title-row">
+                        <h3>Menü Doluluk ve Ortalama Puan Raporu</h3>
+                        <button type="button" id="btnFlushMenuCache" class="btn btn-danger btn-xs" title="Tüm menu:* Redis kayıtlarını temizler">Redis Menü Önbelleğini Temizle</button>
+                    </div>
+                    <p class="text-muted mb-1">Veriler <code>mysql-replica</code> üzerindeki <code>v_menu_doluluk</code> ve <code>v_menu_puan</code> görünümlerinden (view) okunmaktadır. Düzenlemek istediğiniz menünün <strong>Düzenle</strong> düğmesine tıklayın.</p>
+                    <div id="adminReportTable" class="table-responsive"></div>
+                </div>
+            </div>
         </section>
     </main>
+
+    <script src="/js/app.js"></script>
 </body>
 </html>
-
