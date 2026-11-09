@@ -1,8 +1,4 @@
-// ============================================================================
-// Kampüs Yemekhane Otomasyonu - Ön Yüz İstemci Kodu (Vanilla JS + Fetch API)
-// İş kuralları sunucu ve Stored Procedure katmanındadır; arayüz yalnızca
-// API yanıtlarını gösterir ve kullanıcı etkileşimlerini /api/* uçlarına iletir.
-// ============================================================================
+
 
 const AppState = {
     token: localStorage.getItem("yemekhane_token") || null,
@@ -69,9 +65,7 @@ function rolEtiketi(rol) {
     return rol || "";
 }
 
-// ============================================================================
-// 1. OTURUM VE EKRAN GEÇİŞ YÖNETİMİ
-// ============================================================================
+
 
 function oturumuTemizle() {
     AppState.token = null;
@@ -157,9 +151,7 @@ async function referanslariYukle() {
     yoneticiYemekSecicisiniOlustur();
 }
 
-// ============================================================================
-// 2. GÜNÜN MENÜSÜ EKRANI (Alerjen Uyarısı + Redis Önbellek Rozeti)
-// ============================================================================
+
 
 function kullaniciAlerjenUyarisiBul(yemek) {
     const kullaniciAlerjenler = (AppState.kullanici && AppState.kullanici.alerjenIdleri) || [];
@@ -205,7 +197,7 @@ async function gununMenusunuYukle() {
                         <div class="dish-title">${y.yemekAd}</div>
                     </div>
                     <div class="dish-meta">
-                        <span>🔥 ${y.kalori} kcal</span>
+                        <span>${y.kalori} kcal</span>
                         ${y.vejetaryen ? `<span class="badge badge-veg">🌱 Vejetaryen</span>` : ""}
                     </div>
                     <div class="text-muted" style="font-size:0.8rem;">
@@ -242,9 +234,6 @@ async function gununMenusunuYukle() {
     }
 }
 
-// ============================================================================
-// 3. HAFTALIK MENÜ VE REZERVASYON EKRANI (Tam / Yarım Porsiyon + Son Saat Kontrolü)
-// ============================================================================
 
 async function haftalikMenuyuYukle() {
     const yhId = document.getElementById("weeklyYemekhane").value || 1;
@@ -312,7 +301,7 @@ async function haftalikMenuyuYukle() {
 
                 <div class="weekly-footer">
                     <div style="display:flex; justify-content:space-between; font-size:0.82rem;" class="text-muted">
-                        <span>🔥 Toplam: ${m.toplamKalori} kcal</span>
+                        <span>Toplam: ${m.toplamKalori} kcal</span>
                         <span>Rol Ücreti (${rolEtiketi(AppState.kullanici.rol)}): <strong>${formatTL(tamFiyat)}</strong></span>
                     </div>
                     ${porsiyonSecimHtml}
@@ -359,9 +348,7 @@ async function rezervasyonYap(menuId, porsiyon) {
     }
 }
 
-// ============================================================================
-// 4. REZERVASYONLARIM EKRANI
-// ============================================================================
+
 
 async function rezervasyonlarimiYukle() {
     const container = document.getElementById("reservationsList");
@@ -434,9 +421,7 @@ async function rezervasyonlarimiYukle() {
     });
 }
 
-// ============================================================================
-// 5. BAKİYE VE HAREKET GEÇMİŞİ EKRANI
-// ============================================================================
+
 
 async function bakiyeSayfasiniYukle(kaynaktan = false) {
     const veri = await apiFetch(`/api/bakiye?kaynaktan=${kaynaktan}`);
@@ -479,9 +464,7 @@ async function bakiyeSayfasiniYukle(kaynaktan = false) {
     `;
 }
 
-// ============================================================================
-// 6. DEĞERLENDİRME EKRANI
-// ============================================================================
+
 
 async function degerlendirmeSayfasiniYukle() {
     const [rezListe, degerlendirmeler] = await Promise.all([
@@ -517,9 +500,6 @@ async function degerlendirmeSayfasiniYukle() {
     }
 }
 
-// ============================================================================
-// 7. AŞAMA 4: PROFİL VE ALERJEN SEÇİMİ EKRANI
-// ============================================================================
 
 async function profilSayfasiniYukle() {
     const k = AppState.kullanici;
@@ -546,9 +526,7 @@ async function profilSayfasiniYukle() {
     }).join("");
 }
 
-// ============================================================================
-// 8. YÖNETİCİ PANELİ EKRANI
-// ============================================================================
+
 
 function yoneticiYemekSecicisiniOlustur(seciliIdler = []) {
     const container = document.getElementById("adminDishesContainer");
@@ -623,9 +601,7 @@ async function yoneticiSayfasiniYukle() {
     });
 }
 
-// ============================================================================
-// 9. OLAY DİNLEYİCİLERİ (EVENT LISTENERS)
-// ============================================================================
+
 
 document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("alertClose").addEventListener("click", hideAlert);
@@ -808,6 +784,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const demoScreen = urlParams.get("demoScreen");
 
     if (demoScreen) {
+        if (demoScreen === "screen-login") {
+            oturumuTemizle();
+            return;
+        }
         try {
             const demoEmail = demoScreen === "screen-yonetici"
                 ? "admin@kampus.edu.tr"

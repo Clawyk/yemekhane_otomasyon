@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Yemekhane Otomasyonu – Dönem Ödevi Raporu</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 12mm 13mm 12mm 13mm;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #0f172a;
+            line-height: 1.44;
+            font-size: 9.8pt;
+            background: #ffffff;
+        }
+        h1 {
+            font-size: 17pt;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+        h2 {
+            font-size: 13pt;
+            color: #1e3a8a;
+            border-bottom: 2px solid #dbeafe;
+            padding-bottom: 3px;
+            margin-top: 14px;
+            margin-bottom: 7px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 10.5pt;
+            color: #1e40af;
+            margin-top: 9px;
+            margin-bottom: 4px;
+            page-break-after: avoid;
+        }
+        p {
+            margin-bottom: 6px;
+            text-align: justify;
+        }
+        ul {
+            margin-left: 18px;
+            margin-top: 4px;
+        }
+        .report-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .report-header h1 {
+            color: #ffffff;
+        }
+        .report-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            font-size: 9.2pt;
+            color: #e2e8f0;
+            margin-top: 5px;
+        }
+        .report-header code {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            padding: 1px 5px;
+            border-radius: 4px;
+        }
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #1d4ed8;
+            padding: 9px 13px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .warn-box {
+            background: #fef3c7;
+            border-left: 4px solid #d97706;
+            padding: 9px 13px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+        pre {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 7.7pt;
+            line-height: 1.34;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 8px;
+            page-break-inside: avoid;
+        }
+        code {
+            font-family: "SFMono-Regular", Consolas, Menlo, monospace;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 8.5pt;
+        }
+        pre code {
+            background: transparent;
+            padding: 0;
+            color: #f8fafc;
+        }
+        .screens-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+        }
+        .screen-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 6px;
+            background: #f8fafc;
+            page-break-inside: avoid;
+        }
+        .screen-card h4 {
+            font-size: 8.8pt;
+            color: #1e3a8a;
+            margin-bottom: 4px;
+        }
+        .screen-card img {
+            width: 100%;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            display: block;
+        }
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 6px 0 8px;
+            font-size: 8.5pt;
+            text-align: center;
+            page-break-inside: avoid;
+        }
+        .flow-step {
+            background: #ffffff;
+            border: 1px solid #93c5fd;
+            border-radius: 5px;
+            padding: 5px 6px;
+            flex: 1;
+        }
+        .flow-arrow {
+            font-weight: bold;
+            color: #1d4ed8;
+            font-size: 11pt;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="report-header">
+        <h1>Yemekhane Otomasyonu – Dönem Ödevi Raporu</h1>
+        <div class="report-meta">
+            <span><strong>Ders:</strong> Web Teknolojileri</span>
+            <span><strong>Öğrenci:</strong> Mehmet Sefa</span>
+            <span><strong>Tarih:</strong> Ekim – Kasım 2026</span>
+            <span><strong>Git Etiketleri:</strong> <code>asama-1</code> <code>asama-2</code> <code>asama-3</code> <code>asama-4</code></span>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <strong>Aşama 2 Mimari Seçimi ( İlk Sayfa Beyanı ):</strong><br>
+        Bu projede iki mimari yoldan <strong>2. Yol: Web API + Arayüz</strong> mimarisi seçilmiştir.
+        <ul>
+            <li><strong>Arka Uç (Web API):</strong> <code>ASP.NET Core 8.0 (C#)</code> ile katmanlı mimaride geliştirilmiş olup yalnızca JSON döner. Veri erişimi <code>Repositories/YemekhaneRepository.cs</code> ve <code>Data/DbConnectionFactory.cs</code> katmanlarında izole edilmiştir; Controller sınıflarında hiçbir SQL sorgusu bulunmaz.</li>
+            <li><strong>Ön Yüz (Arayüz):</strong> <code>frontend</code> container'ı içindeki <strong>Apache 2.4</strong> tarafından sunulan duyarlı (responsive, 400 px telefon uyumlu) <code>HTML5 + CSS3</code> ve saf (Vanilla) <code>JavaScript fetch</code> ile geliştirilmiştir; React/Vue gibi bir çerçeve kullanılmamıştır. Apache, <code>/api/*</code> isteklerini ters vekil (Reverse Proxy) olarak <code>http://uygulama:8080/api/*</code> servisine iletir.</li>
+        </ul>
+    </div>
+
+    <h2>Aşama 1 · Altyapı ve MySQL Kaynak-Replika Doğrulaması</h2>
+    <p>Sistem 6 container'dan oluşur: <code>frontend</code> (Apache 2.4, port 8080), <code>uygulama</code> (ASP.NET Core 8.0 Web API), <code>mysql-primary</code> (yazma sunucusu, port 3307), <code>mysql-replica</code> (salt okunur okuma sunucusu, port 3308), <code>replica-setup</code> (GTID replikasyonunu bir kez kurup <code>exit 0</code> ile çıkan kurulum servisi) ve <code>redis</code> (önbellek ve oturum deposu, port 6379).</p>
+
+    <h3>1.1. Tüm Servislerin Healthy Durumu ve replica-setup Çıkışı</h3>
+    <pre><code>$ docker compose up -d
+$ docker compose ps -a
+NAME            IMAGE                          COMMAND                  SERVICE         STATUS                     PORTS
+frontend        httpd:2.4-alpine               "httpd-foreground -c…"   frontend        Up 30 minutes (healthy)    0.0.0.0:8080->80/tcp
+mysql-primary   mysql:8.0                      "docker-entrypoint.s…"   mysql-primary   Up 38 minutes (healthy)    0.0.0.0:3307->3306/tcp
+mysql-replica   mysql:8.0                      "docker-entrypoint.s…"   mysql-replica   Up 29 minutes (healthy)    0.0.0.0:3308->3306/tcp
+redis           redis:7-alpine                 "docker-entrypoint.s…"   redis           Up 38 minutes (healthy)    0.0.0.0:6379->6379/tcp
+replica-setup   mysql:8.0                      "/bin/bash /replica-…"   replica-setup   Exited (0) 8 seconds ago
+uygulama        yemekhaneotomasyonu-uygulama   "dotnet YemekhaneApi…"   uygulama        Up 8 seconds (healthy)     8080/tcp</code></pre>
+
+    <h3>1.2. Kaynakta Yapılan Bakiye Yüklemesinin Replikada Görünmesi</h3>
+    <pre><code># 1) Öncesi (mysql-replica üzerinde Kullanıcı #1 Ahmet Yılmaz bakiyesi: 750.00 TL)
+$ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -t -e "SELECT id, ad_soyad, eposta, bakiye FROM kullanicilar WHERE id = 1;"
++----+---------------+----------------------------+--------+
+| id | ad_soyad      | eposta                     | bakiye |
++----+---------------+----------------------------+--------+
+|  1 | Ahmet Yılmaz  | ahmet.yilmaz@kampus.edu.tr | 750.00 |
++----+---------------+----------------------------+--------+
+
+# 2) Kaynakta (mysql-primary) sp_bakiye_yukle ile 100.00 TL bakiye yüklenmesi:
+$ docker exec mysql-primary mysql -uroot -proot_pass_2026 yemekhane -t -e "CALL sp_bakiye_yukle(1, 100.00, 'Aşama 1 replikasyon testi');"
++--------------+---------------+
+| kullanici_id | guncel_bakiye |
++--------------+---------------+
+|            1 |        850.00 |
++--------------+---------------+
+
+# 3) Sonrası (mysql-replica üzerinde bakiye GTID replikasyonuyla 850.00 TL olarak görünüyor):
+$ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -t -e "SELECT id, ad_soyad, eposta, bakiye FROM kullanicilar WHERE id = 1;"
++----+---------------+----------------------------+--------+
+| id | ad_soyad      | eposta                     | bakiye |
++----+---------------+----------------------------+--------+
+|  1 | Ahmet Yılmaz  | ahmet.yilmaz@kampus.edu.tr | 850.00 |
++----+---------------+----------------------------+--------+</code></pre>
+
+    <h3>1.3. Replikaya Yazma Denemesinin Read-Only Hatasıyla Reddedilmesi</h3>
+    <pre><code>$ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -t -e "UPDATE kullanicilar SET bakiye = 9999.00 WHERE id = 1;"
+ERROR 1290 (HY000) at line 1: The MySQL server is running with the --super-read-only option so it cannot execute this statement</code></pre>
+
+    <h3>1.4. Replika Durdurulup Yeniden Başlatıldığında Aradaki Değişiklikleri Yakalaması</h3>
+    <pre><code>$ docker compose stop mysql-replica
+ ✔ Container mysql-replica Stopped
+$ docker exec mysql-primary mysql -uroot -proot_pass_2026 yemekhane -t -e "CALL sp_bakiye_yukle(2, 50.00, 'Replika kapalıyken yükleme');"
++--------------+---------------+
+| kullanici_id | guncel_bakiye |
++--------------+---------------+
+|            2 |        800.00 |
++--------------+---------------+
+$ docker compose start mysql-replica
+$ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -t -e "SELECT id, ad_soyad, eposta, bakiye FROM kullanicilar WHERE id = 2;"
++----+-------------+---------------------------+--------+
+| id | ad_soyad    | eposta                    | bakiye |
++----+-------------+---------------------------+--------+
+|  2 | Zeynep Kaya | zeynep.kaya@kampus.edu.tr | 800.00 |
++----+-------------+---------------------------+--------+</code></pre>
+
+    <h2>Aşama 2 · Uygulama Katmanları, İstek Yolu ve Okuma/Yazma Ayrımı</h2>
+
+    <h3>2.1. Bir İsteğin Uygulama İçindeki Yolu (Route → Controller → Veri Katmanı → Yanıt)</h3>
+    <div class="flow-diagram">
+        <div class="flow-step"><strong>1. Tarayıcı (Fetch)</strong><br><code>POST /api/rezervasyonlar</code></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><strong>2. Apache 2.4</strong><br><code>RewriteRule ^/api/(.*)</code><br><code>http://uygulama:8080</code></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><strong>3. Controller</strong><br><code>RezervasyonController.Olustur()</code><br>(SQL içermez)</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><strong>4. Veri Katmanı</strong><br><code>YemekhaneRepository</code><br><code>CALL sp_rezervasyon_yap</code></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step"><strong>5. JSON Yanıt</strong><br>HTTP 200 OK veya<br>HTTP 400 (SQLSTATE 45000)</div>
+    </div>
+
+    <pre><code>// 1) Controller Katmanı: uygulama/Controllers/RezervasyonController.cs (İçinde SQL bulunmaz)
+[Route("api/rezervasyonlar")]
+public class RezervasyonController : BaseApiController
+{
+    [HttpPost]
+    public async Task&lt;IActionResult&gt; Olustur([FromBody] RezervasyonOlusturDto istek)
+    {
+        var oturum = await AktifOturumGetirAsync(); // Redis 'oturum:{token}' doğrulaması + 30 dk TTL yenileme
+        if (oturum == null) return Unauthorized(new { hata = "Rezervasyon yapmak için lütfen giriş yapın." });
+
+        try {
+            var (rezId, kesilenUcret, guncelBakiye, porsiyon) =
+                await _repository.RezervasyonYapAsync(oturum.Id, istek.MenuId, istek.Porsiyon);
+
+            oturum.Bakiye = guncelBakiye;
+            await RedisService.OturumGuncelleAsync(IstekTokenGetir()!, oturum);
+
+            return Ok(new {
+                mesaj = "Rezervasyonunuz başarıyla oluşturuldu.",
+                rezervasyonId = rezId, porsiyon, kesilenUcret, guncelBakiye,
+                bakiyeOkumaKaynagi = "mysql-primary"
+            });
+        }
+        catch (IsKuraliIstisnasi ex) {
+            // Stored Procedure SQLSTATE '45000' Türkçe hata mesajı HTTP 400 ile arayüze iletilir
+            return BadRequest(new { hata = ex.Message });
+        }
+    }
+}
+
+// 2) Veri Erişim Katmanı: uygulama/Repositories/YemekhaneRepository.cs
+public async Task&lt;(int RezervasyonId, decimal KesilenUcret, decimal GuncelBakiye, string Porsiyon)&gt;
+    RezervasyonYapAsync(int kullaniciId, int menuId, string porsiyon = "tam")
+{
+    await using var conn = await _dbFactory.OpenPrimaryConnectionAsync(); // Yazma -> mysql-primary:3306
+    try {
+        await using var cmd = new MySqlCommand("sp_rezervasyon_yap", conn) { CommandType = CommandType.StoredProcedure };
+        cmd.Parameters.AddWithValue("@p_kullanici_id", kullaniciId);
+        cmd.Parameters.AddWithValue("@p_menu_id", menuId);
+        cmd.Parameters.AddWithValue("@p_porsiyon", porsiyon);
+        // ... Stored Procedure çalıştırılır ve hemen ardından bakiye mysql-primary'den okunur ...
+    }
+    catch (MySqlException ex) when (ex.SqlState == "45000") {
+        throw new IsKuraliIstisnasi(ex.Message); // Örn: "Bakiye yetersiz." veya "Kapasite dolmuştur."
+    }
+}</code></pre>
+
+    <h3>2.2. Rezervasyondan Hemen Sonra Gösterilen Bakiyenin Neden Kaynaktan (mysql-primary) Okunduğu</h3>
+    <div class="warn-box">
+        <strong>Replikasyon Gecikmesi (Replication Lag) ve Read-Your-Own-Writes Tutarlılığı:</strong><br>
+        MySQL kaynak-replika (source-replica) mimarisinde replikasyon varsayılan olarak <strong>asenkron (eşzamansız)</strong> çalışır. Kullanıcı rezervasyon yaptığında <code>sp_rezervasyon_yap</code> yordamı <code>mysql-primary</code> üzerinde kullanıcının bakiyesini düşürür ve işlemi <code>COMMIT</code> eder; ancak bu işlemin binary log (GTID) üzerinden <code>mysql-replica</code> sunucusuna iletilip relay log'dan uygulanması ağ veya disk yüküne bağlı olarak birkaç milisaniye ile birkaç saniye arasında gecikebilir (<em>replikasyon gecikmesi / replication lag</em>). Eğer rezervasyon işlemi tamamlanır tamamlanmaz kullanıcının yeni bakiyesi <code>mysql-replica</code> üzerinden okunsaydı, replika henüz güncellenmemiş olabileceği için kullanıcı ekranda eski (düşülmemiş) bakiyesini görebilirdi. Bu tutarsızlığı (<em>stale read</em>) önlemek ve <strong>Read-Your-Own-Writes</strong> tutarlılığını garanti altına almak adına, rezervasyon ve bakiye yükleme işlemlerinin hemen ardından dönen güncel bakiye doğrudan yazma işleminin yapıldığı <code>mysql-primary</code> sunucusundan okunmaktadır.
+    </div>
+
+    <h3>2.3. Arayüz Ekran Görüntüleri (7 Zorunlu Ekranın Tamamı)</h3>
+    <div class="screens-grid">
+        <div class="screen-card">
+            <h4>Ekran 1: Giriş ve Çıkış (E-posta + Şifre, Bcrypt)</h4>
+            <img src="img/screen_login.png" alt="Ekran 1 Giriş">
+        </div>
+        <div class="screen-card">
+            <h4>Ekran 2: Günün Menüsü (Kalori, Vejetaryen, Alerjen Uyarısı)</h4>
+            <img src="img/screen_gunun_menusu.png" alt="Ekran 2 Günün Menüsü">
+        </div>
+        <div class="screen-card">
+            <h4>Ekran 3: Haftalık Menü ve Rezervasyon (Tam/Yarım Porsiyon)</h4>
+            <img src="img/screen_haftalik_menu.png" alt="Ekran 3 Haftalık Menü">
+        </div>
+        <div class="screen-card">
+            <h4>Ekran 4: Rezervasyonlarım (Aktif, Kullanıldı, İptal)</h4>
+            <img src="img/screen_rezervasyonlarim.png" alt="Ekran 4 Rezervasyonlarım">
+        </div>
+        <div class="screen-card">
+            <h4>Ekran 5: Bakiye (Güncel Bakiye, Hareketler, Bakiye Yükleme)</h4>
+            <img src="img/screen_bakiye.png" alt="Ekran 5 Bakiye">
+        </div>
+        <div class="screen-card">
+            <h4>Ekran 6: Değerlendirme (Kullanılmış Menüye 1–5 Puan ve Yorum)</h4>
+            <img src="img/screen_degerlendirme.png" alt="Ekran 6 Değerlendirme">
+        </div>
+        <div class="screen-card">
+            <h4>Ekran 7: Yönetici Paneli (Menü Oluştur/Düzenle, Doluluk ve Puan)</h4>
+            <img src="img/screen_yonetici.png" alt="Ekran 7 Yönetici Paneli">
+        </div>
+        <div class="screen-card">
+            <h4>Aşama 4 Ekranı: Profilim ve 14 Alerjen Seçimi</h4>
+            <img src="img/screen_profil.png" alt="Profil ve Alerjen Seçimi">
+        </div>
+    </div>
+
+    <h2>Aşama 3 · Redis Önbellek ve Oturum Deposu Doğrulaması</h2>
+    <h3>3.1. Oturum ve Menü Önbelleği redis-cli Çıktıları</h3>
+    <pre><code># 1) Kullanıcı girişi sonrası Redis'te oluşturulan oturum anahtarı ve 30 dk (1800 sn) TTL süresi:
+$ docker exec redis redis-cli KEYS "oturum:*"
+oturum:0358149df97d406a8d810ddfccfb2d3b
+$ docker exec redis redis-cli TTL "oturum:0358149df97d406a8d810ddfccfb2d3b"
+1800
+$ docker exec redis redis-cli GET "oturum:0358149df97d406a8d810ddfccfb2d3b"
+{"Id":1,"AdSoyad":"Ahmet Y\u0131lmaz","Eposta":"ahmet.yilmaz@kampus.edu.tr","Rol":"ogrenci","OgrenciNo":"20231001","Bakiye":850.00,"AlerjenIdleri":[1,2]}
+
+# 2) Günün menüsü ilk istekte DB'den okunup gün sonuna kadar Redis'e yazılır:
+$ docker exec redis redis-cli KEYS "menu:*"
+menu:1:2026-10-26:2
+$ docker exec redis redis-cli TTL "menu:1:2026-10-26:2"
+3364</code></pre>
+
+    <h3>3.2. Uygulama Günlüğü (İlk İstek DB, İkincisi Redis ve Menü Güncellemede Invalidation)</h3>
+    <pre><code>$ docker logs uygulama
+[REDIS SESSION CREATE] Oturum oluşturuldu: oturum:0358149df97d406a8d810ddfccfb2d3b (Kullanıcı: ahmet.yilmaz@kampus.edu.tr, TTL: 1800 sn)
+[REDIS CACHE MISS] İlk istek: 'menu:1:2026-10-26:2' Redis'te bulunamadı, veritabanından (mysql-replica) okunuyor.
+[DB READ - REPLICA] v_menu_doluluk, v_menu_puan ve v_menu_detay sorgulanıyor (Yemekhane:1, Tarih:2026-10-26, Öğün:2)
+[REDIS CACHE SET] Menü Redis önbelleğine yazıldı: 'menu:1:2026-10-26:2' (TTL: 3364 sn, gün sonuna kadar)
+[REDIS CACHE HIT] İstek Redis önbelleğinden karşılandı: 'menu:1:2026-10-26:2'
+[DB WRITE - PRIMARY] Menü kaydedildi/güncellendi (MenuId:38, Yemekhane:1, Tarih:2026-10-26, Öğün:2)
+[REDIS CACHE INVALIDATE] Menü güncellendiği için önbellek kaydı silindi: 'menu:1:2026-10-26:2' (Silindi: True)</code></pre>
+
+    <h3>3.3. Uygulama Container'ı Yeniden Başlatıldığında Oturumun Korunması</h3>
+    <pre><code>$ docker compose restart uygulama
+ ✔ Container uygulama Started
+$ curl -sS http://localhost:8080/api/auth/me -H "Authorization: Bearer 0358149df97d406a8d810ddfccfb2d3b"
+{"id":1,"adSoyad":"Ahmet Yılmaz","eposta":"ahmet.yilmaz@kampus.edu.tr","rol":"ogrenci","ogrenciNo":"20231001","bakiye":850.00,"alerjenIdleri":[1,2]}</code></pre>
+
+    <h2>Aşama 4 · Değişiklik Talebi ve Migration (04_degisiklik.sql)</h2>
+    <h3>4.1. Migration Uygulaması ve Replikaya Geçtiğinin Kanıtı (SHOW CREATE TABLE)</h3>
+    <pre><code>$ docker exec -i mysql-primary mysql -uroot -proot_pass_2026 yemekhane &lt; 04_degisiklik.sql
+$ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -e "SHOW CREATE TABLE rezervasyonlar\G"
+*************************** 1. row ***************************
+       Table: rezervasyonlar
+Create Table: CREATE TABLE `rezervasyonlar` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `kullanici_id` int NOT NULL,
+  `menu_id` int NOT NULL,
+  `durum` enum('aktif','kullanildi','iptal') COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT 'aktif',
+  `porsiyon` enum('tam','yarim') COLLATE utf8mb4_turkish_ci NOT NULL DEFAULT 'tam',
+  `ucret` decimal(10,2) NOT NULL,
+  `olusturulma_tarihi` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `guncellenme_tarihi` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_kullanici_menu` (`kullanici_id`,`menu_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci
+
+$ docker exec mysql-replica mysql -uroot -proot_pass_2026 yemekhane -e "SHOW CREATE TABLE kullanici_alerjenleri\G"
+*************************** 1. row ***************************
+       Table: kullanici_alerjenleri
+Create Table: CREATE TABLE `kullanici_alerjenleri` (
+  `kullanici_id` int NOT NULL,
+  `alerjen_id` int NOT NULL,
+  `olusturulma_tarihi` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`kullanici_id`,`alerjen_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_turkish_ci</code></pre>
+
+    <h3>4.2. Eski Redis Menü Kayıtlarının Temizlenmesi ve Yarım Porsiyon / SQLSTATE 45000 Testleri</h3>
+    <pre><code># 1) Eski yapıdaki Redis menü kayıtlarının temizlenmesi:
+$ curl -sS -X POST http://localhost:8080/api/yonetici/cache-temizle -H "Authorization: Bearer $ADMIN_TOKEN"
+{"mesaj":"Redis üzerindeki 1 adet menü önbellek kaydı temizlendi.","silinenSayisi":1}
+
+# 2) Kahvaltı menüsüne yarım porsiyon denemesi (sp_rezervasyon_yap SQLSTATE 45000 Türkçe hata döndürür):
+$ curl -sS -X POST http://localhost:8080/api/rezervasyonlar -H "Authorization: Bearer $TOKEN" -d '{"menuId":43,"porsiyon":"yarim"}'
+{"hata":"Kahvaltı öğününde yarım porsiyon seçeneği bulunmamaktadır."}
+
+# 3) Akşam menüsüne (Tam fiyat: 35.00 TL) yarım porsiyon (%60 = 21.00 TL) rezervasyonu:
+$ curl -sS -X POST http://localhost:8080/api/rezervasyonlar -H "Authorization: Bearer $TOKEN" -d '{"menuId":48,"porsiyon":"yarim"}'
+{"mesaj":"Rezervasyonunuz başarıyla oluşturuldu.","rezervasyonId":6,"porsiyon":"yarim","kesilenUcret":21.00,"guncelBakiye":829.00,"bakiyeOkumaKaynagi":"mysql-primary"}</code></pre>
+
+    <h3>4.3. Telefon Genişliği (~400 px Duyarlı Mobil Görünüm)</h3>
+    <div style="display:flex; justify-content:center; margin-top:6px;">
+        <div class="screen-card" style="width:280px;">
+            <h4>400 px Telefon Genişliği Görünümü</h4>
+            <img src="img/screen_mobil_400px.png" alt="400px Mobil Görünüm">
+        </div>
+    </div>
+
+</body>
+</html>
